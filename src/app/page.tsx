@@ -1,103 +1,104 @@
-import Image from "next/image";
+'use client'
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/app/components/ui/accordion';
+import { Button } from '@/app/components/ui/button';
+import { Input } from '@/app/components/ui/input';
+import { packageJsonSchema, PackageJsonSchema } from '@/lib/schemas/packageJsonSchema';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useFieldArray, useForm, useWatch } from 'react-hook-form';
 
-export default function Home() {
+export default function PackageJsonForm() {
+  const { register, control, formState: { errors } } = useForm<PackageJsonSchema>({
+    resolver: zodResolver(packageJsonSchema),
+    defaultValues: {
+      private: true,
+      sideEffects: false,
+      type: 'module',
+      dependencies: [],
+      devDependencies: [],
+    },
+  });
+
+  const dependenciesArray = useFieldArray({ control, name: 'dependencies' });
+  const devDependenciesArray = useFieldArray({ control, name: 'devDependencies' });
+
+  const watchedFields = useWatch({ control });
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+    <div className="space-y-6">
+      <Accordion type="multiple" className="w-full">
+        {/* Metadata */}
+        <AccordionItem value="metadata">
+          <AccordionTrigger>Metadata</AccordionTrigger>
+          <AccordionContent className="flex flex-col gap-4">
+            <label>Name<Input placeholder="Name" {...register('name')} /></label>
+            {errors.name && <span className="text-red-500">{errors.name.message}</span>}
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+            <label>Version<Input placeholder="Version" {...register('version')} /></label>
+            {errors.version && <span className="text-red-500">{errors.version.message}</span>}
+
+            <label>Description<Input placeholder="Description" {...register('description')} /></label>
+          </AccordionContent>
+        </AccordionItem>
+
+        {/* Scripts */}
+        <AccordionItem value="scripts">
+          <AccordionTrigger>Scripts</AccordionTrigger>
+          <AccordionContent className="flex flex-col gap-4">
+            <label>Build script<Input placeholder="Build script" {...register('scripts.build')} /></label>
+            <label>Test script<Input placeholder="Test script" {...register('scripts.test')} /></label>
+            <label>Start script<Input placeholder="Start script" {...register('scripts.start')} /></label>
+          </AccordionContent>
+        </AccordionItem>
+
+        {/* Dependencies */}
+        <AccordionItem value="dependencies">
+          <AccordionTrigger>Dependencies</AccordionTrigger>
+          <AccordionContent className="flex flex-col gap-4">
+            {dependenciesArray.fields.map((field, index) => (
+              <div key={field.id} className="flex gap-2">
+                <label>Dependency Name<Input placeholder="Dependency Name" {...register(`dependencies.${index}.name`)} /></label>
+                <label>Version<Input placeholder="Version" {...register(`dependencies.${index}.version`)} /></label>
+                <Button type="button" variant="destructive" onClick={() => dependenciesArray.remove(index)}>Remove</Button>
+              </div>
+            ))}
+            <Button type="button" onClick={() => dependenciesArray.append({ name: '', version: '' })}>Add Dependency</Button>
+          </AccordionContent>
+        </AccordionItem>
+
+        {/* Dev Dependencies */}
+        <AccordionItem value="devDependencies">
+          <AccordionTrigger>Dev Dependencies</AccordionTrigger>
+          <AccordionContent className="flex flex-col gap-4">
+            {devDependenciesArray.fields.map((field, index) => (
+              <div key={field.id} className="flex gap-2">
+                <label>Dev Dependency Name<Input placeholder="Dev Dependency Name" {...register(`devDependencies.${index}.name`)} /></label>
+                <label>Version<Input placeholder="Version" {...register(`devDependencies.${index}.version`)} /></label>
+                <Button type="button" variant="destructive" onClick={() => devDependenciesArray.remove(index)}>Remove</Button>
+              </div>
+            ))}
+            <Button type="button" onClick={() => devDependenciesArray.append({ name: '', version: '' })}>Add Dev Dependency</Button>
+          </AccordionContent>
+        </AccordionItem>
+
+        {/* Configuration & Flags */}
+        <AccordionItem value="config">
+          <AccordionTrigger>Configuration & Flags</AccordionTrigger>
+          <AccordionContent className="flex flex-col gap-4">
+            <label>Private<Input placeholder="Private (true or false)" {...register('private')} /></label>
+            <label>Side Effects<Input placeholder="Side Effects (true or false)" {...register('sideEffects')} /></label>
+            <label>Type<Input placeholder="Type (module or commonjs)" {...register('type')} /></label>
+            <label>Package Manager<Input placeholder="Package Manager" {...register('packageManager')} /></label>
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
+
+      <pre className="bg-gray-100 p-4 rounded-lg overflow-auto text-sm">
+        {JSON.stringify({
+          ...watchedFields,
+          dependencies: watchedFields.dependencies?.reduce((acc, curr) => ({ ...acc, [curr.name]: curr.version }), {}),
+          devDependencies: watchedFields.devDependencies?.reduce((acc, curr) => ({ ...acc, [curr.name]: curr.version }), {}),
+        }, null, 2)}
+      </pre>
     </div>
   );
 }
