@@ -92,7 +92,7 @@ export default function PackageJsonForm() {
                 <label className="font-semibold flex items-center gap-2">Private<Switch defaultChecked={true} onCheckedChange={(value) => setValue('private', value)} /></label>
                 <label className="font-semibold flex items-center gap-2">Side Effects<Switch defaultChecked={false} onCheckedChange={(value) => setValue('sideEffects', value)} /></label>
                 <label className="font-semibold">Type
-                  <Select defaultValue="module" onValueChange={(value) => setValue('type', value)}>
+                  <Select defaultValue="module" onValueChange={(value: 'module' | 'commonjs') => setValue('type', value)}>
                     <SelectTrigger><SelectValue placeholder="Select type" /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="module">module</SelectItem>
